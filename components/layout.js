@@ -124,8 +124,8 @@ module.exports = {
 				<main class="common">
 					<div class="grid itemList testform" data-tablet-columns="2" data-mobile-columns="1">
 						<div class="col12 header">
-							<button type="button" >삭제</button>
-							<a href="/create" >추가</a>
+							<button type="button" data-ui-action="delete" class="btn" >삭제</button>
+							<button type="button" data-ui-action="create" class="btn" >추가</button>
 						</div>
 						${itemList}
 					</div>

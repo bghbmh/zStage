@@ -1,31 +1,42 @@
 import * as cf from './commonFunction.js';
-import * as component from './component.js';
+//import * as component from './component.js';
 
 
-import * as ccc from '../../../components/cardType1.js';
+import * as card from '../../../components/card.js';
 
 
 document.addEventListener("DOMContentLoaded", () => {
-	
+
 	console.log("DOMContentLoaded upload");
 
-	cf.fileHandler._load( { 
-		url: './data/myList.json', 
-		success : function(request){
-			
-			let html = ``;
+	let html = ``;
+	cf.fileHandler._load({
+		url: './data/myList.json',
+		success: function (request) {
 
-			let itemsData = JSON.parse(request.responseText);
-			for( let i=0; i<itemsData.length; i++ ){
-				html = html + ccc.cardType1(itemsData[i]);
-			}		
+			console.log( request )
+
+			if( !request.responseText ) {
+				html = html + card.type1.view(null);
+			} else {
+
+				let itemsData = JSON.parse(request.responseText);
+				for (let i = 0; i < itemsData.length; i++) {
+					html = html + card.type1.view(itemsData[i]);
+				}
+	
+				console.log(" request - ", itemsData);
+			}
 			
-			console.log(" request - ", itemsData );
 
 			document.querySelector(".testform").innerHTML += html;
-
 		},
-		loadType:"item", 
+		error: function (request) {
+			console.log(" error - ", request);
+
+			document.querySelector(".testform").innerHTML += card.type1.create();
+		},
+		loadType: "item",
 		done: "items",
 	});
 
@@ -35,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	// 		console.log(" trtr request - ", request );
 	// 	}
 	// });
-	
+
 	document.querySelector(".testform").addEventListener("click", itemListHandler);
 
 });
@@ -52,8 +63,8 @@ const fileSelect = document.getElementById("fileSelect"),
 	fileElem = document.getElementById("fileElem"),
 	fileList = document.getElementById("fileList");
 
-function introHandler(request){
-	console.log("test introHandler items",request.arguments, JSON.parse(request.responseText))
+function introHandler(request) {
+	console.log("test introHandler items", request.arguments, JSON.parse(request.responseText))
 	let itemsData = JSON.parse(request.responseText);
 }
 
@@ -128,11 +139,11 @@ function itemListHandler(e) {
 
 							console.log("gggg - ", filebox, files);
 
+							let d = input.parentNode;
 							for (let i = 0; i < files.length; i++) {
-								input.dataset.uiTemplate ? files[i].dataset.template = input.dataset.uiTemplate : '';
+								d.dataset.imageItem ? files[i].dataset.imageItem = d.dataset.imageItem : '';
 								testData[input.name].push(testFileinfo(files[i].dataset));
 							}
-
 
 							break;
 						default:
@@ -145,23 +156,67 @@ function itemListHandler(e) {
 
 			console.log(t.type, " - ", aaaurl, testData, JSON.stringify(testData)); //JSON.stringify(testData)
 
+
+
+			let form = t.closest("form");
+			form.action = '/updating';
+			form.method = 'GET';
+
+			
+
+			break;
+		case 'button':
+			buttonAction(t.closest('[data-ui-action]').dataset.uiAction, t.closest(".item"), '', this);
 			break;
 	}
 
-	// switch(e.type){
-	// 	case "click":
-	// 		fileSelect.addEventListener( "change", function (e) {
-	// 			console.log("fileSelect - ", e, this.querySelector("[type='file']").files)
-	// 			uploadImageType2(this.querySelector("[type='file']").files)
-
-	// 		}, false);
-	// 	break;
-	// 	default:
-	// 		console.log(" no type ");
-	// 	break;
-	// }
-
 }
+
+
+
+function buttonAction(action, nowItem, editItem = '', itemList) {
+	console.log("button - ", action);
+
+	switch (action) {
+		case "edit":
+
+			cf.fileHandler._load({
+				url: './data/myList.json',
+				success: function (request) {
+
+					editItem = JSON.parse(request.responseText)
+						.find(o => o.id === parseInt(nowItem.dataset.itemNumber));
+
+					nowItem.outerHTML = card.type1.edit(editItem);
+
+					sessionStorage.setItem('bmh', JSON.stringify(editItem));
+
+					nowItem.classList.add("editing");
+
+					console.log(" editItem - ", editItem, JSON.stringify(editItem));
+
+
+				}
+			});
+			break;
+		case "cancle":
+			console.log(" cancle sessionStorage - ", JSON.parse(sessionStorage.getItem('bmh')));
+			nowItem.outerHTML = card.type1.view(JSON.parse(sessionStorage.getItem('bmh')));
+			sessionStorage.removeItem('bmh');
+			break;
+		case "create":
+			console.log(" create - ", card.type1.create());
+			itemList.firstElementChild.after(card.type1.create());
+			
+			
+			
+
+			
+			break;
+	}
+}
+
+
 
 function testFileinfo(fileinfo) {
 	let t = {};
@@ -226,13 +281,12 @@ function uploadImageType2(files) {
 			const figcaption = CreateElement({ tag: "figcaption", class: 'figcaption' });
 			figcaption.innerHTML = `
 				<dl class="option">
-					<dt class="title">${files[i].name}</dt><dd>${returnFileSize(files[i].size)}</dd>
+					<dt class="title">${files[i].name}</dt><dd>${calcFileSize(files[i].size)}</dd>
 				</dl>`;
 
 			figcaption.innerHTML += `
 			<div class="ctrl">
-				<button type="button" class="btn" title="파일 삭제 버튼" aria-label="파일 삭제 버튼"><i class="fa-solid fa-xmark"></i></button>
-				<!-- button type="button" class="btn" title="파일 수정 버튼" aria-label="파일 수정 버튼"><i class="fa-solid fa-pen" aria-hidden="true"></i></button -->
+				<button type="button" data-ui-action="delete" class="btn" title="파일 삭제 버튼" aria-label="파일 삭제 버튼"><i class="fa-solid fa-xmark"></i></button>
 			</div>`;
 
 			figure.appendChild(figcaption);
@@ -264,7 +318,7 @@ function drop(e) {
 	handleFiles(files);
 }
 
-function returnFileSize(number) {
+function calcFileSize(number) {
 	if (number < 1024) {
 		return number + "bytes";
 	} else if (number >= 1024 && number < 1048576) {

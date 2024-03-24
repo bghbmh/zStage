@@ -38,7 +38,7 @@
 			}			
 		],
 		"title" : "menu1",
-		"category" : "menu1",
+		"category" : "menu1_지금위치",
 		"hash" : [ "hash1","테스트" ],
 		"sampleName" : "keimyung",
 		"samplePage" : ["main.html","sub.html"]
