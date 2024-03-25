@@ -16,6 +16,8 @@ app.get('/', function (request, response) {
 	//fs.readdir('./data', function (error, filelist) {
 	let title = 'Welcome';
 
+	console.log("nodejs 확인중 - ", title);
+
 	try {
 		// const jsonFile = fs.readFileSync('./public/data/test.json', 'utf8');
 		// const jsonData = JSON.parse(jsonFile);
