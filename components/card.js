@@ -8,7 +8,7 @@ export let type1 = {
 		if( !item ){
 			return `
 			<div class="col12 item">
-				no item
+				no item test
 			</div>
 			`;
 		}
