@@ -9,6 +9,16 @@
   "author": "bghbmh",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.1"
-  }
+    "express": "^4.19.1",
+    "multer": "^1.4.5-lts.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bghbmh/zStage.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/bghbmh/zStage/issues"
+  },
+  "homepage": "https://github.com/bghbmh/zStage#readme"
 }

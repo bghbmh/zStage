@@ -46,7 +46,7 @@ export let type1 = {
 					<div class="w-100per">
 						<span class="guide">test_해시태그</span>
 						<p>
-							${hashType(item.hash)}
+							${item.hash ? hashType(item.hash) : ''}
 						</p>
 					</div>
 
@@ -54,7 +54,7 @@ export let type1 = {
 
 					<div class="w-100per">
 						<span class="guide">test_제목</span>
-						<p>${item.title ? item.title : ''}</p>
+						<p>${item.title2 ? item.title2 : ''}</p>
 					</div>
 
 					<hr class="w-100per dot">
@@ -99,7 +99,7 @@ export let type1 = {
 			<div class="cnts grid">
 				<div class="col5 " >
 					<div class="upload fileList type2 w-100per">
-						<label class="btn" title="파일을 선택하세요" data-image-item="main" data-ui-placeholder="파일을 선택하세요test">
+						<label class="btn" title="파일을 선택하세요" data-image-id="main" data-ui-placeholder="파일을 선택하세요test">
 							<span class="hidden">파일을 선택하세요</span>
 							<input type="file" name="image" accept="image/*">
 							<i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -107,7 +107,7 @@ export let type1 = {
 					</div>
 
 					<div class="upload fileList type3 w-100per margin-top-1"> 
-						<label class="btn" title="파일을 선택하세요" data-image-item="sub"  data-ui-placeholder="파일을 선택하세요_testTest">
+						<label class="btn" title="파일을 선택하세요" data-image-id="sub"  data-ui-placeholder="파일을 선택하세요_testTest">
 							<span class="hidden">파일을 선택하세요</span>
 							<input type="file" name="image"accept="image/*" multiple>
 							<i class="fa-regular fa-image" aria-hidden="true"></i>
@@ -134,19 +134,19 @@ export let type1 = {
 
 					<label class="w-100per">	
 						<span class="guide">test_제목</span>						
-						<input type="text" placeholder="" name="title" required >
+						<input type="text" placeholder="" name="title2" required >
 					</label>
 
 					<label class="w-100per">
 						<span class="guide">test_샘플이름</span>
 						<span class="error" aria-live="polite"></span>
-						<input type="text" placeholder="test_샘플이름" name="samplename" required>
+						<input type="text" placeholder="test_샘플이름" name="sampleName" required>
 					</label>
 
 					<div class="upload type1 w-100per">
 						<label class="btn" title="파일을 선택하세요" data-ui-template="list" data-ui-placeholder="">
 							<span class="guide">test_샘플페이지</span>
-							<input type="file" name="samplepage" multiple>
+							<input type="file" name="samplePage" multiple>
 							<i class="fa-solid fa-paperclip" aria-hidden="true"></i>
 						</label>
 
@@ -176,7 +176,7 @@ export let type1 = {
 				<div class="cnts grid">
 					<div class="col5 " >
 						<div class="upload fileList type2 w-100per">
-							<label class="btn" title="파일을 선택하세요" data-image-item="main" data-ui-placeholder="파일을 선택하세요test">
+							<label class="btn" title="파일을 선택하세요" data-image-id="main" data-ui-placeholder="파일을 선택하세요test">
 								<span class="hidden">파일을 선택하세요</span>
 								<input type="file" name="image" accept="image/*">
 								<i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -215,7 +215,7 @@ export let type1 = {
 
 						<label class="w-100per">	
 							<span class="guide">test_제목</span>						
-							<input type="text" placeholder="fill in" value="${item.title ? item.title : ''}" name="title" required >
+							<input type="text" placeholder="fill in" value="${item.title ? item.title : ''}" name="title2" required >
 						</label>
 
 						<label class="w-100per">
@@ -243,6 +243,7 @@ export let type1 = {
 					<button type="button"  data-ui-action="delete" class="btn" aria-label="삭제하기 버튼" title="삭제하기 버튼"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
 					<button type="button"  data-ui-action="cancle" class="btn" aria-label="취소하기 버튼" title="취소하기 버튼"><i class="fa-solid fa-arrow-rotate-right" aria-hidden="true"></i></button>
 				</footer>
+				<input type="hidden" name="filetest">
 			</form>
 		`;
 	}
@@ -256,7 +257,7 @@ function imageType1(items, str = '') {
 
 		if (!str) {
 			html += imageType1_html(o);
-		} else if (o.imageItem === str) {
+		} else if (o.imageId === str) {
 			html += imageType1_html(o);
 		}
 	});
@@ -306,7 +307,7 @@ function imageType1edit(items, str = '') {
 
 		if (!str) {
 			html += imageType1edit_html(o);
-		} else if (o.imageItem === str) {
+		} else if (o.imageId === str) {
 			html += imageType1edit_html(o);
 		}
 	});

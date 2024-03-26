@@ -7,7 +7,7 @@ import * as card from '../../../components/card.js';
 
 document.addEventListener("DOMContentLoaded", () => {
 
-	console.log("DOMContentLoaded upload");
+	console.log("DOMContentLoaded upload", sessionStorage.getItem('testList') );
 
 	let html = ``;
 	cf.fileHandler._load({
@@ -86,14 +86,12 @@ function itemListHandler(e) {
 
 				console.log("22222 type1 - ", t.value, tmpPath);
 
-				let box = t.closest(".fileList");
+				let box = t.closest(".fileList") || t.parentNode.parentNode.querySelector(".fileList");
+				box.dataset.imageId = t.parentNode.imageId;
 
-				if (t.parentNode.parentNode.querySelector(".fileList")) {
-					box = t.parentNode.parentNode.querySelector(".fileList");
-					console.log("box11 - ", box);
+				if ( box.classList.contains("type1")) {
 					[...uploadImageType2(t.files).children].forEach(ch => box.appendChild(ch));
 				} else {
-					console.log("box22 - ", box);
 					[...uploadImageType2(t.files).children].forEach(ch => box.insertBefore(ch, t.parentNode));
 				}
 
@@ -139,9 +137,9 @@ function itemListHandler(e) {
 
 							console.log("gggg - ", filebox, files);
 
-							let d = input.parentNode;
+							
 							for (let i = 0; i < files.length; i++) {
-								d.dataset.imageItem ? files[i].dataset.imageItem = d.dataset.imageItem : '';
+								filebox.dataset.imageId ? files[i].dataset.imageId = filebox.dataset.imageId : '';
 								testData[input.name].push(testFileinfo(files[i].dataset));
 							}
 
@@ -158,9 +156,50 @@ function itemListHandler(e) {
 
 
 
+
+			sessionStorage.setItem('testList', JSON.stringify(testData));
+
+
+
 			let form = t.closest("form");
-			form.action = '/updating';
-			form.method = 'GET';
+			// form.action = '/updating';
+			// form.method = 'POST';
+			// form.enctype = 'multipart/form-data';
+			
+
+			new FormData(form);
+
+
+			form.addEventListener("formdata", (e) => {
+				console.log("formdata fired");
+			  
+				// Get the form data from the event object
+				const data = e.formData;
+				for (const value of data.values()) {
+					console.log(value);
+				}
+			
+				for (const [key, value] of e.formData) {
+					console.log("?? - ", key ," - ", value);
+				}
+				
+
+				
+			  
+				// Submit the data via fetch()
+				fetch("/updating", {
+					method: "POST",
+					body: form ,
+				})
+				.then((response) => { 
+					console.log("response - ", response);
+					response.json(); 
+				})
+				.then((data) => {
+					console.log("data - ", data);
+				});
+
+			});
 
 			
 
