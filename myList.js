@@ -42,7 +42,7 @@ app.get('/', function (request, response) {
 		let body = '';// card.type1.view(jsonData);
 
 		// fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
-		html =  layout.adminTest(title, '');;//layout.adminMain(title, body);
+		html =  layout.adminMain(title, body) ;//layout.adminTest(title, '');
 
 		// });
 	} catch (err) {

@@ -99,17 +99,17 @@ export let type1 = {
 			<div class="cnts grid">
 				<div class="col5 " >
 					<div class="upload fileList type2 w-100per">
-						<label class="btn" title="파일을 선택하세요" data-image-id="main" data-ui-placeholder="파일을 선택하세요test">
+						<label class="btn" title="파일을 선택하세요" data-upload-id="main" data-ui-placeholder="파일을 선택하세요test">
 							<span class="hidden">파일을 선택하세요</span>
-							<input type="file" name="image" accept="image/*">
+							<input type="file" name="mimage" accept="image/*">
 							<i class="fa-solid fa-plus" aria-hidden="true"></i>
 						</label>
 					</div>
 
 					<div class="upload fileList type3 w-100per margin-top-1"> 
-						<label class="btn" title="파일을 선택하세요" data-image-id="sub"  data-ui-placeholder="파일을 선택하세요_testTest">
+						<label class="btn" title="파일을 선택하세요" data-upload-id="sub"  data-ui-placeholder="파일을 선택하세요_testTest">
 							<span class="hidden">파일을 선택하세요</span>
-							<input type="file" name="image"accept="image/*" multiple>
+							<input type="file" name="simage" accept="image/*" multiple>
 							<i class="fa-regular fa-image" aria-hidden="true"></i>
 						</label>						
 					</div>
@@ -131,7 +131,6 @@ export let type1 = {
 						</select>
 					</label>
 
-
 					<label class="w-100per">	
 						<span class="guide">test_제목</span>						
 						<input type="text" placeholder="" name="title2" required >
@@ -144,7 +143,7 @@ export let type1 = {
 					</label>
 
 					<div class="upload type1 w-100per">
-						<label class="btn" title="파일을 선택하세요" data-ui-template="list" data-ui-placeholder="">
+						<label class="btn" title="파일을 선택하세요" data-upload-id="file" data-ui-placeholder="">
 							<span class="guide">test_샘플페이지</span>
 							<input type="file" name="samplePage" multiple>
 							<i class="fa-solid fa-paperclip" aria-hidden="true"></i>
@@ -176,7 +175,7 @@ export let type1 = {
 				<div class="cnts grid">
 					<div class="col5 " >
 						<div class="upload fileList type2 w-100per">
-							<label class="btn" title="파일을 선택하세요" data-image-id="main" data-ui-placeholder="파일을 선택하세요test">
+							<label class="btn" title="파일을 선택하세요" data-upload-id="main" data-ui-placeholder="파일을 선택하세요test">
 								<span class="hidden">파일을 선택하세요</span>
 								<input type="file" name="image" accept="image/*">
 								<i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -188,7 +187,7 @@ export let type1 = {
 
 							${imageType1edit(item.image, "sub")}
 
-							<label class="btn" title="파일을 선택하세요" data-item="sub"  data-ui-placeholder="파일을 선택하세요_testTest">
+							<label class="btn" title="파일을 선택하세요" data-upload-id="sub"  data-ui-placeholder="파일을 선택하세요_testTest">
 								<span class="hidden">파일을 선택하세요</span>
 								<input type="file" name="image"accept="image/*" multiple>
 								<i class="fa-regular fa-image" aria-hidden="true"></i>
@@ -225,7 +224,7 @@ export let type1 = {
 						</label>
 
 						<div class="upload type1 w-100per">
-							<label class="btn" title="파일을 선택하세요" data-ui-template="list" data-ui-placeholder="">
+							<label class="btn" title="파일을 선택하세요" data-upload-id="file" data-ui-placeholder="">
 								<span class="guide">test_샘플페이지</span>
 								<input type="file" name="samplepage" multiple>
 								<i class="fa-solid fa-paperclip" aria-hidden="true"></i>

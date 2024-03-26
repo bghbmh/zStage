@@ -110,98 +110,116 @@ function itemListHandler(e) {
 
 			//showError(t.closest(".item").querySelector(".cnts").querySelectorAll('input'));
 
-			let testData = {};
-			t.closest(".item")
-				.querySelectorAll('input')
-				.forEach(input => {
-					//console.log( input , " - ",input.type, input.name, input.checked );
-
-					switch (input.type) {
-						case "text":
-						case "number":
-							testData[input.name] = input.value;
-							break;
-						case "checkbox":
-						case "radio":
-							testData[input.name] = input.checked;
-							break;
-						case "file":
-
-							if (!testData.hasOwnProperty(input.name)) {
-								testData[input.name] = [];
-							}
-
-							let filebox = input.parentNode.parentNode.querySelector(".fileList") || input.closest(".fileList");
-
-							let files = filebox.querySelectorAll(".item");
-
-							console.log("gggg - ", filebox, files);
-
-							
-							for (let i = 0; i < files.length; i++) {
-								filebox.dataset.imageId ? files[i].dataset.imageId = filebox.dataset.imageId : '';
-								testData[input.name].push(testFileinfo(files[i].dataset));
-							}
-
-							break;
-						default:
-							break;
-					}
-
-				});
-
-			t.closest(".item").querySelectorAll('select').forEach(select => testData[select.name] = select.value);
-
-			console.log(t.type, " - ", aaaurl, testData, JSON.stringify(testData)); //JSON.stringify(testData)
 
 
-
-
-			sessionStorage.setItem('testList', JSON.stringify(testData));
-
-
-
-			let form = t.closest("form");
-			// form.action = '/updating';
-			// form.method = 'POST';
-			// form.enctype = 'multipart/form-data';
 			
 
-			new FormData(form);
+			let form = t.closest("form");
+			let testFormdata =  new FormData(form);
 
+			let testData = {};
 
 			form.addEventListener("formdata", (e) => {
+
 				console.log("formdata fired");
-			  
+
+
+				e.formData.append("TESTstart", "VALUEstart");
+
+				t.closest(".item")
+					.querySelectorAll('input')
+					.forEach(input => {
+						//console.log( input , " - ",input.type, input.name, input.checked );
+
+						switch (input.type) {
+							case "text":
+							case "number":
+								testData[input.name] = input.value;
+								e.formData.append(input.name, input.value);
+								break;
+							case "checkbox":
+							case "radio":
+								testData[input.name] = input.checked;
+								e.formData.append(input.name, input.checked);
+								break;
+							case "file":
+
+								if (!testData.hasOwnProperty(input.name)) {
+									testData[input.name] = [];
+								}
+
+								let filebox = input.parentNode.parentNode.querySelector(".fileList") || input.closest(".fileList");
+
+								let files = filebox.querySelectorAll(".item");
+
+								console.log("gggg - ", input.parentNode.dataset.uploadId, files);
+
+								let id = input.parentNode.dataset.uploadId;
+
+								
+
+
+
+								for (let i = 0; i < files.length; i++) {
+
+									console.log("여기로 오는듯", files)
+									id ? files[i].dataset.uploadId = id : '';
+
+									testData[input.name].push(testFileinfo(files[i].dataset));
+
+									e.formData.append( id + i, files[i]);
+									
+								}
+
+								break;
+							default:
+								break;
+						}
+
+					});
+
+				t.closest(".item").querySelectorAll('select').forEach(select => testData[select.name] = select.value);
+
+				console.log(t.type, " - ", aaaurl, testData, JSON.stringify(testData)); //JSON.stringify(testData)
+
+
+
+
+				sessionStorage.setItem('testList', JSON.stringify(testData));
+
+				
+				// form.action = '/updating';
+				// form.method = 'POST';
+				// form.enctype = 'multipart/form-data';
+				
+				
 				// Get the form data from the event object
-				const data = e.formData;
-				for (const value of data.values()) {
-					console.log(value);
-				}
+				e.formData.append("testtesttestTEST", "testendendEND");
+
+				//const data = e.formData;
+				
 			
 				for (const [key, value] of e.formData) {
 					console.log("?? - ", key ," - ", value);
 				}
+							
 				
-
-				
-			  
 				// Submit the data via fetch()
-				fetch("/updating", {
-					method: "POST",
-					body: form ,
-				})
-				.then((response) => { 
-					console.log("response - ", response);
-					response.json(); 
-				})
-				.then((data) => {
-					console.log("data - ", data);
-				});
+				// fetch("/test", {
+				// 	method: "POST",
+				// 	body: form ,
+				// })
+				// .then((response) => { 
+				// 	console.log("response - ", response);
+				// 	response.json(); 
+				// })
+				// .then((data) => {
+				// 	console.log("data - ", data);
+				// });
 
-			});
+			});			
 
-			
+			//e.preventDefault();// 임시
 
 			break;
 		case 'button':
@@ -311,7 +329,14 @@ function uploadImageType2(files) {
 			figure.dataset.fileName = files[i].name;
 			figure.dataset.fileSize = files[i].size;
 
-			const img = CreateElement({ tag: "img", class: 'uploading', src: `${window.URL.createObjectURL(files[i])}`, title: `${files[i].name}`, "aria-label": `${files[i].name}`, alt: `${files[i].name}` });
+			const img = CreateElement({ 
+				tag: "img", 
+				class: 'uploading', 
+				src: `${window.URL.createObjectURL(files[i])}`, 
+				title: `${files[i].name}`, 
+				"aria-label": `${files[i].name}`, 
+				alt: `${files[i].name}` 
+			});
 			img.onload = function () {
 				window.URL.revokeObjectURL(this.src);
 			};
