@@ -109,115 +109,43 @@ function itemListHandler(e) {
 			//console.log(" file - ", t);
 
 			//showError(t.closest(".item").querySelector(".cnts").querySelectorAll('input'));
-
-
-
-			
-
 			let form = t.closest("form");
-			let testFormdata =  new FormData(form);
+			let testFormdata =  new FormData();
+			
+			upload( checkedData(t.closest(".item"), testFormdata) );
 
 			let testData = {};
 
-			form.addEventListener("formdata", (e) => {
+			// form.addEventListener("formdata", (e) => {
 
-				console.log("formdata fired");
+			// 	console.log("formdata fired");
 
+			// 	e.formData.append("TESTstart", "VALUEstart");
 
-				e.formData.append("TESTstart", "VALUEstart");
+			// 	t.closest(".item").querySelectorAll('select').forEach(select => testData[select.name] = select.value);
 
-				t.closest(".item")
-					.querySelectorAll('input')
-					.forEach(input => {
-						//console.log( input , " - ",input.type, input.name, input.checked );
-
-						switch (input.type) {
-							case "text":
-							case "number":
-								testData[input.name] = input.value;
-								e.formData.append(input.name, input.value);
-								break;
-							case "checkbox":
-							case "radio":
-								testData[input.name] = input.checked;
-								e.formData.append(input.name, input.checked);
-								break;
-							case "file":
-
-								if (!testData.hasOwnProperty(input.name)) {
-									testData[input.name] = [];
-								}
-
-								let filebox = input.parentNode.parentNode.querySelector(".fileList") || input.closest(".fileList");
-
-								let files = filebox.querySelectorAll(".item");
-
-								console.log("gggg - ", input.parentNode.dataset.uploadId, files);
-
-								let id = input.parentNode.dataset.uploadId;
-
-								
+			// 	console.log(t.type, " - ", aaaurl, testData, JSON.stringify(testData)); //JSON.stringify(testData)
 
 
-
-								for (let i = 0; i < files.length; i++) {
-
-									console.log("여기로 오는듯", files)
-									id ? files[i].dataset.uploadId = id : '';
-
-									testData[input.name].push(testFileinfo(files[i].dataset));
-
-									e.formData.append( id + i, files[i]);
-									
-								}
-
-								break;
-							default:
-								break;
-						}
-
-					});
-
-				t.closest(".item").querySelectorAll('select').forEach(select => testData[select.name] = select.value);
-
-				console.log(t.type, " - ", aaaurl, testData, JSON.stringify(testData)); //JSON.stringify(testData)
-
-
-
-
-				sessionStorage.setItem('testList', JSON.stringify(testData));
+			// 	sessionStorage.setItem('testList', JSON.stringify(testData));
 
 				
-				// form.action = '/updating';
-				// form.method = 'POST';
-				// form.enctype = 'multipart/form-data';
-				
-				
-				// Get the form data from the event object
-				e.formData.append("testtesttestTEST", "testendendEND");
+			// 	// Get the form data from the event object
+			// 	e.formData.append("testtesttestTEST", "testendendEND");
 
-				//const data = e.formData;
+			// 	//const data = e.formData;
 				
 			
-				for (const [key, value] of e.formData) {
-					console.log("?? - ", key ," - ", value);
-				}
-							
-				
-				// Submit the data via fetch()
-				// fetch("/test", {
-				// 	method: "POST",
-				// 	body: form ,
-				// })
-				// .then((response) => { 
-				// 	console.log("response - ", response);
-				// 	response.json(); 
-				// })
-				// .then((data) => {
-				// 	console.log("data - ", data);
-				// });
+			// 	for (const [key, value] of e.formData) {
+			// 		console.log("?? - ", key ," - ", value, value.length ? value.length : "xx");
+			// 	}
 
-			});			
+			// 	// uploadpostData("https://example.com/answer", { answer: 42 }).then((data) => {
+			// 	// 	console.log(data); // JSON 데이터가 `data.json()` 호출에 의해 파싱됨
+			// 	// });
+							
+
+			// });			
 
 			//e.preventDefault();// 임시
 
@@ -227,6 +155,86 @@ function itemListHandler(e) {
 			break;
 	}
 
+}
+
+
+// POST 메서드 구현 예제
+async function upload(formData) {
+	console.log("upload - test - ", formData)
+	try {
+		const response = await fetch("http://localhost:3300/updating", {
+			method: "POST",
+			body: formData,
+		});
+		const result = await response.json();
+		console.log("성공:", result);
+	} catch (error) {
+		console.error("실패:", error);
+	}
+}
+
+
+async function uploadpostData(url = "", data = {}) {
+	// 옵션 기본 값은 *로 강조
+	const response = await fetch(url, {
+		method: "POST", // *GET, POST, PUT, DELETE 등
+		mode: "cors", // no-cors, *cors, same-origin
+		cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+		credentials: "same-origin", // include, *same-origin, omit
+		headers: {
+			"Content-Type": "application/json",
+			// 'Content-Type': 'application/x-www-form-urlencoded',
+		},
+		redirect: "follow", // manual, *follow, error
+		referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+		body: JSON.stringify(data), // body의 데이터 유형은 반드시 "Content-Type" 헤더와 일치해야 함
+	});
+	return response.json(); // JSON 응답을 네이티브 JavaScript 객체로 파싱
+}
+
+
+
+function checkedData(form, fd){
+
+	form.querySelectorAll('input')
+	.forEach(input => {
+		//console.log( input , " - ",input.type, input.name, input.checked );
+
+		switch (input.type) {
+			case "text":
+			case "number":
+				//testData[input.name] = input.value;
+				fd.append(input.name, input.value);
+				break;
+			case "checkbox":
+			case "radio":
+				//testData[input.name] = input.checked;
+				fd.append(input.name, input.checked);
+				break;
+			case "file":
+
+				// if (!testData.hasOwnProperty(input.name)) {
+				// 	testData[input.name] = [];
+				// }
+
+				// let filebox = input.parentNode.parentNode.querySelector(".fileList") || input.closest(".fileList");
+
+				// let files = filebox.querySelectorAll(".item");
+
+				// console.log("gggg - ", input.parentNode.dataset.uploadId, files);
+
+				// let id = input.parentNode.dataset.uploadId;
+
+				break;
+			default:
+				break;
+		}
+
+	});
+
+	console.log(  " checkedData - ",fd );
+
+	return fd;
 }
 
 

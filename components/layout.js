@@ -17,11 +17,14 @@ module.exports = {
 				<script type="module" src="/assets/js/common.js"></script>
 			</head>
 			<body>
+
 				<!-- header -->
 				<header class="common2">
 					<div class="hello2">
 						<!-- <h1 class="logo">
-							<a href="_index.html" title="" aria-label=""><small class="fs60">logo</small></a>
+							<a href="_index.html" title="logo" aria-label="">
+								<small class="fs60">logo</small>
+							</a>
 						</h1> -->
 						<h1 class="logo" aria-label="test">
 							<!-- <a href="_index.html" title="test" aria-label="test"></a> -->
@@ -148,76 +151,25 @@ module.exports = {
 
 				<link rel="stylesheet" type="text/css" href="public/assets/css/bootstrap.css">
 				<link rel="stylesheet" type="text/css" href="public/assets/css/upload.css">
+				<script type="module" src="public/assets/js/adminTest.js"></script>
 			</head>
 			<body>
 
-			<form enctype="multipart/form-data" method="post" name="fileinfo" id="fileinfo">
-				<p>
-					<label>Custom file label:
-						<input type="text" name="filelabel">
-					</label>
-				</p>
-				<p>
-					<label>File to stash:
-						<input type="file" name="myFile" id="fileInput"/>
-					</label>
-				</p>
-				<p>
-					<input type="submit" value="Stash the file!" />
-				</p>
+			<!--
+			<form id="userinfo">
+				<div>
+					<label for="avatar">Select an avatar</label>
+					<input type="file" name="asd" multiple/>
+				</div>
+				<button type="button" id="send">Submit </button>
 			</form>
+			-->
 
 
-<script>
-const ffff = document.querySelector("#fileinfo");
-const fileInput = document.querySelector("#fileInput");
-
-ffff.addEventListener("submit", async (e) => {
-	e.preventDefault();
-	// construct a FormData object, which fires the formdata event
-
-	console.log("submit - ");
-	new FormData(ffff);
-});
-
-ffff.addEventListener("formdata", (e) => {
-	console.log("formdata fired");
-  
-	// Get the form data from the event object
-	const data = e.formData;
-
-
-	//e.formData.append('attachedImage',fileInput.files[0]);
-	//formData.set('testImage', blob, 'test이미지.png');
-
-	for (const value of data.values()) {
-		console.log(value);
-	}
-
-
-
-
-	for (const [key, value] of e.formData) {
-		console.log("?? - ", key ," - ", value);
-	}
-
-  
-	// Submit the data via fetch()
-	fetch("/updating", {
-		method: "POST",
-		cache: 'no-cache',
-		body: ffff,
-	});
-	// .then((response) => { 
-	// 	console.log("response - ", response);
-	// 	//response.json(); 
-	// })
-	// .then((data) => {
-	// 	console.log("data - ", data);
-	// });
-});
-
-</script>
+			<form id="userinfo" action="/upload" method="POST" enctype="multipart/form-data">
+				<input type="file" name="myFile" />
+				<button type="button"  id="send">Upload</button>
+			</form>
 
 
 
