@@ -29,7 +29,7 @@ app.use(express.json());
 
 
 app.use(express.static('./'));
-const layout = require('./components/layout.js');
+const layout = require('../components/layout.js');
 
 
 

@@ -17,25 +17,10 @@
 				"template":"sub"
 			},
 			{
-				"fileName":"no-img.gif",
-				"fileSize":"30976",
-				"template":"sub"
-			},
-			{
 				"fileName":"no-contents.svg",
 				"fileSize":"30976",
 				"template":"sub"
-			},
-			{
-				"fileName":"뉴욕타임스.png",
-				"fileSize":"30976",
-				"template":"sub"
-			},
-			{
-				"fileName":"구글_로그인UI변경후_콘솔_240312.png",
-				"fileSize":"30976",
-				"template":"sub"
-			}			
+			}		
 		],
 		"title" : "menu1",
 		"category" : "menu1_지금위치",

@@ -13,14 +13,14 @@ export let type1 = {
 			`;
 		}
 		return `
-		<div class="col4 item" data-item-number="${item.id}">
+		<div class="col4 item" data-item-number="${item.id ? item.id:'임시_아이디는필수아이가'}">
 			<header class="d-flex">
 				<label class="margin-right-auto" title="아이템선택하기">
 					<span class="hidden">아이템선택하기</span>
 					<input type="checkbox" name="testform">
 				</label>
 
-				${item.main ? '<span class="label blue">메인에서 보임</span>' : ''}
+				${item.mainopen ? '<span class="label blue">메인에서 보임</span>' : ''}
 			</header>
 			
 			<div class="cnts grid">
@@ -38,7 +38,7 @@ export let type1 = {
 				<div class="col7 d-flex flex-column align-items-start ">
 					<div class="w-100per" data-ui-placeholder>
 						<span class="guide">test_titlexxx</span>
-						<p>${item.category}</p>
+						<p>${item.category ? item.category : ''}</p>
 					</div>
 
 					<hr class="w-100per dot">
@@ -163,23 +163,19 @@ export let type1 = {
 		return elem;
 	},
 	edit: (item) => {
+		console.log("edit item - ", item)
 		return `
 			<form class="col4 item editing" data-item-number="${item.id}">
 				<header class="d-flex">
 					<label class="margin-left-auto" data-ui-action="toggle" title="메인에 보이게 할지말지 선택하는 버튼">
 						<span class="">선택하기</span>
-						<input type="checkbox" name="mainopen">
+						<input type="checkbox" name="mainopen" ${item.mainopen ? "checked" : ''}>
 					</label>
 				</header>
 
 				<div class="cnts grid">
 					<div class="col5 " >
 						<div class="upload fileList type2 w-100per">
-							<label class="btn" title="파일을 선택하세요" data-upload-id="main" data-ui-placeholder="파일을 선택하세요test">
-								<span class="hidden">파일을 선택하세요</span>
-								<input type="file" name="image" accept="image/*">
-								<i class="fa-solid fa-plus" aria-hidden="true"></i>
-							</label>
 							${imageType1edit(item.image, "main")}
 						</div>
 
@@ -252,25 +248,20 @@ export let type1 = {
 
 function imageType1(items, str = '') {
 	let html = '';
-	items.find(o => {
+	items.filter( o => o.template === str )
+		.forEach( t => html += imageType1_html(t) );
 
-		if (!str) {
-			html += imageType1_html(o);
-		} else if (o.imageId === str) {
-			html += imageType1_html(o);
-		}
-	});
 	return html;
 }
 
 
 function imageType1_html(o) {
 	return `<figure class="item">
-				<img src="public/assets/img/contents/${o.fileName}">
+				<img src="data/image/${o.fileName}">
 				<figcaption class="figcaption">
 					<dl class="option">
 						<dt class="title">${o.fileName}</dt>
-						<dd>${returnFileSize(o.fileSize)}</dd>
+						<dd>${checkFileSize(o.fileSize)}</dd>
 					</dl>
 				</figcaption>
 			</figure>`;
@@ -302,25 +293,31 @@ function sampleFile(item) {
 
 function imageType1edit(items, str = '') {
 	let html = '';
-	items.find(o => {
 
-		if (!str) {
-			html += imageType1edit_html(o);
-		} else if (o.imageId === str) {
-			html += imageType1edit_html(o);
-		}
-	});
+	items.filter( o => o.template === str )
+		.forEach( t => html += imageType1edit_html(t) );
+
+	//임시
+	if ( str === "main" && html == '' ){
+		html = `
+			<label class="btn" title="파일을 선택하세요" data-upload-id="${o.template}" data-ui-placeholder="파일을 선택하세요 ccccc">
+				<span class="hidden">파일을 선택하세요 ccccc</span>
+				<input type="file" name="image" accept="image/*">
+				<i class="fa-solid fa-plus" aria-hidden="true"></i>
+			</label>
+		`;
+	}
 	return html;
 }
 
 
 function imageType1edit_html(o) {
 	return `<figure class="item">
-				<img src="public/assets/img/contents/${o.fileName}">
+				<img src="data/image/${o.fileName}">
 				<figcaption class="figcaption">
 					<dl class="option">
 						<dt class="title">${o.fileName}</dt>
-						<dd>${returnFileSize(o.fileSize)}</dd>
+						<dd>${checkFileSize(o.fileSize)}</dd>
 					</dl>
 					<div class="ctrl">
 						<button type="button"  data-ui-action="delete" class="btn" aria-label="삭제하기 버튼" title="삭제하기 버튼"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
@@ -357,7 +354,7 @@ function sampleFileedit(item) {
 
 
 
-function returnFileSize(number) {
+function checkFileSize(number) {
 	if (number < 1024) {
 		return number + "bytes";
 	} else if (number >= 1024 && number < 1048576) {

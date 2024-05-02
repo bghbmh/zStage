@@ -13,27 +13,21 @@ document.addEventListener("DOMContentLoaded", () => {
 	cf.fileHandler._load({
 		url: './data/myList.json',
 		success: function (request) {
+			//console.log("load success - ", request )
+			let itemsData = JSON.parse(request.responseText);
 
-			console.log( request )
-
-			if( !request.responseText ) {
+			if( !itemsData || !itemsData.length ) {
 				html = html + card.type1.view(null);
 			} else {
-
-				let itemsData = JSON.parse(request.responseText);
 				for (let i = 0; i < itemsData.length; i++) {
 					html = html + card.type1.view(itemsData[i]);
-				}
-	
-				console.log(" request - ", itemsData);
+				}	
 			}
-			
 
 			document.querySelector(".testform").innerHTML += html;
 		},
 		error: function (request) {
 			console.log(" error - ", request);
-
 			document.querySelector(".testform").innerHTML += card.type1.create();
 		},
 		loadType: "item",
@@ -79,10 +73,8 @@ function itemListHandler(e) {
 	switch (t.type) {
 		case "file":
 
-			if (t.dataset.listener === "change") return;
-
 			t.addEventListener("change", function (e) {
-				let tmpPath = URL.createObjectURL(t.files[0]); // 파일 경로 가져오는건데.. 굳이 필요할까 싶음
+				let tmpPath = URL.createObjectURL(t.files[0]); // 파일 경로 가져오는거
 
 				console.log("22222 type1 - ", t.value, tmpPath);
 
@@ -95,26 +87,31 @@ function itemListHandler(e) {
 					[...uploadImageType2(t.files).children].forEach(ch => box.insertBefore(ch, t.parentNode));
 				}
 
-				// 임시_리스너 한번만 붙이게, 추가 임시 설정함
-				t.dataset.listener = 'change';
-				// 삭제는 나중에하고 우선은 안보이게만 처리
 				if (t.closest('.type2')) {
 					t.parentNode.style.display = "none";
 				};
-				//setTimeout(() => {console.log("this is the third message") }, 1000) ;
-			});
+				
+			},{ once: true});
 
 			break;
 		case "submit":
-			//console.log(" file - ", t);
-
+			
+			e.preventDefault();
 			//showError(t.closest(".item").querySelector(".cnts").querySelectorAll('input'));
 			let form = t.closest("form");
 			let testFormdata =  new FormData();
-			
-			upload( checkedData(t.closest(".item"), testFormdata) );
+  
+			// FormData 객체에 title1, myFile1 데이터 추가
+			//testFormdata.append('title1', form.title1.value);
+			//testFormdata.append('myFile1', form.myFile1.files[0]);
+
+			//uploadJSON( checkedData(form, testFormdata) );
+
 
 			let testData = {};
+			//console.log("json check - ",JSON.stringify( checkedDataJson(form, testData) )  )
+
+			uploadJSON( checkedDataJson(form, testData) );
 
 			// form.addEventListener("formdata", (e) => {
 
@@ -159,17 +156,38 @@ function itemListHandler(e) {
 
 
 // POST 메서드 구현 예제
+async function uploadJSON(formdata) {
+
+	console.log("upload - test - ", JSON.stringify(formdata), )
+	fetch('http://210.101.173.162:3300/upload', {
+		method: 'POST',
+		headers: {
+			"Content-Type": "application/json",
+			// 'Content-Type': 'application/x-www-form-urlencoded',
+			// 'Content-Type': 'multipart/form-data'
+		},
+		body: JSON.stringify(formdata) // body 부분에 폼데이터 변수를 할당
+	})
+	.then((response) => console.log(response))
+	// .then((data) => {
+	// 	console.log(data);
+	// });
+
+}
+
+
 async function upload(formData) {
 	console.log("upload - test - ", formData)
 	try {
-		const response = await fetch("http://localhost:3300/updating", {
+		const response = await fetch("http://210.101.173.162:3300/upload", {
 			method: "POST",
+			mode: 'cors',		
 			body: formData,
 		});
-		const result = await response.json();
-		console.log("성공:", result);
+		//const result = await response.json();
+		console.log("성공:", response);
 	} catch (error) {
-		console.error("실패:", error);
+		console.log("실패:", error);
 	}
 }
 
@@ -184,6 +202,7 @@ async function uploadpostData(url = "", data = {}) {
 		headers: {
 			"Content-Type": "application/json",
 			// 'Content-Type': 'application/x-www-form-urlencoded',
+			// 'Content-Type': 'multipart/form-data'
 		},
 		redirect: "follow", // manual, *follow, error
 		referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
@@ -193,48 +212,119 @@ async function uploadpostData(url = "", data = {}) {
 }
 
 
-
+//formdata 사용할때
 function checkedData(form, fd){
 
 	form.querySelectorAll('input')
-	.forEach(input => {
-		//console.log( input , " - ",input.type, input.name, input.checked );
+		.forEach(input => {
+			//console.log( input , " - ",input.type, input.name, input.checked );
 
-		switch (input.type) {
-			case "text":
-			case "number":
-				//testData[input.name] = input.value;
-				fd.append(input.name, input.value);
-				break;
-			case "checkbox":
-			case "radio":
-				//testData[input.name] = input.checked;
-				fd.append(input.name, input.checked);
-				break;
-			case "file":
+			switch (input.type) {
+				case "text":
+				case "number":
+					//testData[input.name] = input.value;
+					fd.append(input.name, input.value);
+					break;
+				case "checkbox":
+				case "radio":
+					//testData[input.name] = input.checked;
+					fd.append(input.name, input.checked);
+					break;
+				case "file":
 
-				// if (!testData.hasOwnProperty(input.name)) {
-				// 	testData[input.name] = [];
-				// }
+					// if (!testData.hasOwnProperty(input.name)) {
+					// 	testData[input.name] = [];
+					// }
 
-				// let filebox = input.parentNode.parentNode.querySelector(".fileList") || input.closest(".fileList");
+					// let filebox = input.parentNode.parentNode.querySelector(".fileList") || input.closest(".fileList");
 
-				// let files = filebox.querySelectorAll(".item");
+					// let files = filebox.querySelectorAll(".item");
 
-				// console.log("gggg - ", input.parentNode.dataset.uploadId, files);
+					// console.log("gggg - ", input.parentNode.dataset.uploadId, files);
 
-				// let id = input.parentNode.dataset.uploadId;
+					// let id = input.parentNode.dataset.uploadId;
 
-				break;
-			default:
-				break;
-		}
+					break;
+				default:
+					break;
+			}
+
+		});
+
+	form.querySelectorAll(".fileList.type2 .imgfile").forEach( img => {
+		const reader = new FileReader();
+		fd.append('mainimgFile', img.file);
+		
+	});
+
+	let testImgarr = [];
+	form.querySelectorAll(".fileList.type3 .imgfile").forEach( (img, idx) => {
+		const reader = new FileReader();
+
+		console.log("sss - ", img.file)
+
+		//testImgarr.push(img.file);
+		fd.append('subimgFile', img.file);
+		
+		
+	});
+	//fd.append('subimgFile', testImgarr);
+	
+	console.log(" data -  ", fd)
+	console.log(" testImgarr -  ", testImgarr)
+
+	return fd;
+}
+
+// json 형태로 넘길때
+function checkedDataJson(form, testData){
+
+	form.querySelectorAll('input')
+		.forEach(input => {
+			//console.log( input , " - ",input.type, input.name, input.checked );
+
+			switch (input.type) {
+				case "text":
+				case "number":
+					testData[input.name] = input.value;
+					break;
+				case "checkbox":
+				case "radio":
+					testData[input.name] = input.checked;
+					break;
+				case "file":
+					break;
+				default:
+					break;
+			}
 
 	});
 
-	console.log(  " checkedData - ",fd );
+	testData.image = [];
+	form.querySelectorAll(".fileList.type2 .imgfile").forEach( img => {
+		
+		console.log("mainimg - ", img.file );
+		testData.image.push({
+			"template" : "main",
+			"fileName": `${img.file.name}`,
+			"fileSize": `${img.file.size}`,
+		});
+	});
 
-	return fd;
+	form.querySelectorAll(".fileList.type3 .imgfile").forEach( (img, idx) => {
+
+		console.log("subimg - ", img.file);
+		testData.image.push({
+			"template" : "sub",
+			"fileName": `${img.file.name}`,
+			"fileSize": `${img.file.size}`,
+		});		
+		
+	});
+
+	console.log(" testData -  ", testData)
+
+	return testData;
 }
 
 
@@ -258,7 +348,7 @@ function buttonAction(action, nowItem, editItem = '', itemList) {
 
 					nowItem.classList.add("editing");
 
-					console.log(" editItem - ", editItem, JSON.stringify(editItem));
+					//console.log(" editItem - ", editItem, JSON.stringify(editItem));
 
 
 				}
@@ -339,15 +429,22 @@ function uploadImageType2(files) {
 
 			const img = CreateElement({ 
 				tag: "img", 
-				class: 'uploading', 
-				src: `${window.URL.createObjectURL(files[i])}`, 
+				class: 'imgfile', // src: `${window.URL.createObjectURL(files[i])}`, 
 				title: `${files[i].name}`, 
 				"aria-label": `${files[i].name}`, 
 				alt: `${files[i].name}` 
 			});
-			img.onload = function () {
-				window.URL.revokeObjectURL(this.src);
+			img.file = files[i];
+			// img.onload = function () {
+			// 	window.URL.revokeObjectURL(this.src);
+			// };
+
+			const reader = new FileReader();
+			reader.onload = e => {
+				img.src = e.target.result;
 			};
+			reader.readAsDataURL(files[i]);
+
 			figure.appendChild(img);
 
 			const figcaption = CreateElement({ tag: "figcaption", class: 'figcaption' });
@@ -390,14 +487,23 @@ function drop(e) {
 	handleFiles(files);
 }
 
-function calcFileSize(number) {
-	if (number < 1024) {
-		return number + "bytes";
-	} else if (number >= 1024 && number < 1048576) {
-		return (number / 1024).toFixed(1) + "KB";
-	} else if (number >= 1048576) {
-		return (number / 1048576).toFixed(1) + "MB";
-	}
+// function calcFileSize(number) {// KB는 1000 십진법 기준이라고 함, 그래서 이거는 1024로 나눴으니까 KB가 아니고 KiB 로 쓰는게 정확한 단위임
+// 	if (number < 1024) {
+// 		return number + "bytes";
+// 	} else if (number >= 1024 && number < 1048576) {
+// 		return (number / 1024).toFixed(1) + "KB"; 
+// 	} else if (number >= (1024 * 1024) && number < (1024 * 1024 * 1024)) {
+// 		return (number / 1048576).toFixed(1) + "MB";
+// 	} else if (number >=  (1024 * 1024 * 1024)) {
+// 		return (number / (1024 * 1024 * 1024) ).toFixed(1) + "GB";
+// 	}
+// }
+
+function calcFileSize(number) {// 사이에 i 가 있는건 키 '비' 바이트라고 부른다함, 이게 1024 이진법 기준 계산이고
+	const units = ["B",	"KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"]; 
+	const exponent = Math.min( Math.floor(Math.log(number) / Math.log(1024)), units.length - 1 );
+	const approx = number / 1024 ** exponent;
+	return exponent === 0 ? `${number} bytes` : `${approx.toFixed(1)} ${units[exponent]} (${number} bytes)`;
 }
 
 function CreateElement(attributes = {}) { // { tag : "div", class: "sample", ...} 

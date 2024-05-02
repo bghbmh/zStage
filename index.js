@@ -1,59 +1,79 @@
-var express = require('express');
-var app = express();
-var fs = require('fs');
+const express = require('express');
+const fs = require('fs')
+var cors = require('cors');
+const app = express();
 
-var layout = require('./components/layout.js');
-var cardType1 = require('./components/cardType1.js');
-const cardType2 = require('./components/cardType2.js');
+const path = require('path');
+const publicPath = path.join(__dirname, 'public');
+//app.use(express.static(publicPath));
+app.use(express.static('./'));
+app.use(cors());
 
-app.use(express.static('public'));
+const layout = require('./components/layout.js');
 
-//var template = require('./lib/template.js');
-
-//route, routing
-//app.get('/', (req, res) => res.send('Hello World!'))
-
-var html = '';
-app.get('/', function (request, response) {
-	//fs.readdir('./data', function (error, filelist) {
-		var title = 'Welcome';
-
-		try{
-			const jsonFile = fs.readFileSync('./public/data/test.json', 'utf8');
-			const jsonData = JSON.parse(jsonFile);
-
-			
-
-			let body = cardType2.view(jsonData);
-			body += `<a href="/sub">sub go?</a>`;
-			body += `<a href="/create">create?</a>`;
-			// fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
-			html = layout.main(title, body);
-				
-			// });
-		} catch (err) {
-			console.log("오류 - ", err);
-			html = layout.main(title, err);
-		}		
-		
-		response.send(html);
-	//});
+const multer = require('multer');
+// const upload = multer({
+// 	dest: 'files/'
+// });
+const upload = multer({
+    storage: multer.diskStorage({
+      	filename(req, file, done) {
+          	//console.log("multer filename - ", file);
+			done(null, file.originalname);
+        },
+		destination(req, file, done) {
+      		//console.log("multer destination - ", file);
+		    //done(null, path.join(__dirname, "public"));
+			done(null, path.join(__dirname, "files"));
+	    },
+    }),
+	//limits: { fileSize: 1024 * 1024 }
 });
 
-app.get('/sub', function (req, res) {
-	html = layout.sub("test_SUB_title", 'subpage test');
-	res.send(html);
-	//return res.send(html);
+//const uploadMiddleware = upload.single('mainimgFile');
+//const uploadMiddleware = upload.array("subimgFile");
+const uploadMiddleware = upload.fields([
+	{ name: "mainimgFile" },
+	{ name: "subimgFile" }
+]);
+
+
+app.use((err, req, res, next) => {
+	console.log("error middleware");
+	console.log(err.toString());
+	res.send(err.toString());
+});
+
+app.use(uploadMiddleware);
+app.use(express.json());
+
+app.get("/", (req, res) => {
+
+	//response.send( layout.adminTest11("test title") );
+	res.send(layout.adminMain("test title", '') )
+});
+
+app.post('/upload', (req, res) => {
+    console.log("upload - ", req.body );
+	//console.log("upload files - ", req.files );
+
+	fs.readFile('./data/test.txt', 'utf8', (err, data) => {
+		console.log(data);
+	});
+
+
+	const fileData = fs.readFileSync('./data/myList.json', 'utf8');
+	let temp = JSON.parse(fileData);
+	req.body.id = temp.length + 1;
+	temp.push(req.body);
+
+	fs.writeFileSync('./data/myList.json', JSON.stringify(temp));
+
+
+    res.status(200).send('test uploaded');
 });
 
 
-app.get('/create', function (req, res) {
-	html = layout.sub("test_SUB_title", cardType1.create());
-	res.send(html);
-	//return res.send(html);
-});
-
-app.listen(3000, function () {
-	console.log('Example app listening on port 3000!')
-
+app.listen(3300, () => {
+    console.log('server is running at 3000');
 });
