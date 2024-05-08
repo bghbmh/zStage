@@ -1,11 +1,11 @@
-name: Node.js CI
+name: test_--Our CI
 
 on: [push]
 
 jobs:
   build:
 
-    runs-on: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
